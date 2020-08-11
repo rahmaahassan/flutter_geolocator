@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 
 class HomePage extends StatefulWidget {
@@ -8,34 +9,39 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final Geolocator geolocator = Geolocator()..forceAndroidLocationManager;
+  GoogleMapController mapController;
+  final LatLng _center = const LatLng(45.521563, -122.677433);
+  //final Geolocator geolocator = Geolocator()..forceAndroidLocationManager;
 
-  Position _currentPosition;
-  String _currentAddress;
+  //Position _currentPosition;
+  //String _currentAddress;
+
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Location'),
+        title: Text('Maps'),
         centerTitle: true,
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            if (_currentPosition != null) Text(_currentAddress),
-            FlatButton(
-              child: Text('Get Location'),
-              onPressed: () => _getCurrentLocation(),
+      body:
+        //mainAxisAlignment: MainAxisAlignment.center,
+          /*if (_currentPosition != null) Text(_currentAddress),
+          FlatButton(
+            child: Text('Get Location'),
+            onPressed: () => _getCurrentLocation(),
+          ),*/
+          GoogleMap(
+            onMapCreated: _onMapCreated,
+            initialCameraPosition: CameraPosition(
+              target: _center,
+              zoom: 11.0,
             )
-          ],
-        ),
-      ),
-    );
+          ),
+      );
   }
 
-  _getCurrentLocation() {
+  /*_getCurrentLocation() {
 
     geolocator
         .getCurrentPosition(desiredAccuracy: LocationAccuracy.best)
@@ -66,5 +72,9 @@ class _HomePageState extends State<HomePage> {
     } catch (e) {
       print (e);
     }
+  }*/
+
+  void _onMapCreated(GoogleMapController controller) {
+    mapController = controller;
   }
 }
