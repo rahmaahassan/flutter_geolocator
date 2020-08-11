@@ -9,56 +9,54 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  GoogleMapController mapController;
-  final LatLng _center = const LatLng(45.521563, -122.677433);
-  //final Geolocator geolocator = Geolocator()..forceAndroidLocationManager;
+  final Map<String, Marker> _markers = {};
 
-  //Position _currentPosition;
-  //String _currentAddress;
+  GoogleMapController mapController;
+  //final LatLng _center = const LatLng(45.521563, -122.677433);
+  final Geolocator geolocator = Geolocator()..forceAndroidLocationManager;
+
 
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        onPressed: _getLocation,
+        tooltip: 'Get Location',
+        child: Icon(Icons.flag),
+      ),
       appBar: AppBar(
         title: Text('Maps'),
         centerTitle: true,
       ),
-      body:
-        //mainAxisAlignment: MainAxisAlignment.center,
-          /*if (_currentPosition != null) Text(_currentAddress),
-          FlatButton(
-            child: Text('Get Location'),
-            onPressed: () => _getCurrentLocation(),
-          ),*/
-          GoogleMap(
+      body: GoogleMap(
+            mapType: MapType.hybrid,
             onMapCreated: _onMapCreated,
             initialCameraPosition: CameraPosition(
-              target: _center,
-              zoom: 11.0,
-            )
-          ),
-      );
+              target: LatLng(40.688841, -74.044015),
+              zoom: 11,
+            ),
+            markers: _markers.values.toSet(),
+      ),
+    );
   }
 
-  /*_getCurrentLocation() {
+  void _getLocation() async {
+    var currentLocation = await Geolocator()
+        .getCurrentPosition(desiredAccuracy: LocationAccuracy.best);
 
-    geolocator
-        .getCurrentPosition(desiredAccuracy: LocationAccuracy.best)
-        .then((Position position) {
-      setState(() {
-        _currentPosition = position;
-      });
-
-      _getAddressFromLatLng
-      (
+    setState(() {
+      _markers.clear();
+      final marker = Marker(
+        markerId: MarkerId("curr_loc"),
+        position: LatLng(currentLocation.latitude, currentLocation.longitude),
+        infoWindow: InfoWindow(title: 'Your Location'),
       );
-    }).catchError((e){
-      print(e);
+      _markers["Current Location"] = marker;
     });
   }
 
-  _getAddressFromLatLng() async {
+  /*getAddressFromLatLng() async {
     try {
       List<Placemark> p = await geolocator.placemarkFromCoordinates(
         _currentPosition.latitude,
@@ -77,4 +75,5 @@ class _HomePageState extends State<HomePage> {
   void _onMapCreated(GoogleMapController controller) {
     mapController = controller;
   }
+
 }
