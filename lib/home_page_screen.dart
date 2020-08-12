@@ -22,6 +22,7 @@ class _HomePageState extends State<HomePage> {
     return MaterialApp(
       home: Scaffold(
         floatingActionButton: FloatingActionButton(
+          backgroundColor: Theme.of(context).accentColor,
           onPressed: _getLocation,
           tooltip: 'Get Location',
           child: Icon(Icons.flag),
@@ -29,7 +30,8 @@ class _HomePageState extends State<HomePage> {
         ),
         appBar: AppBar(
           title: Text('Maps Sample App'),
-          backgroundColor: Colors.green[700],
+          centerTitle: true,
+          backgroundColor: Theme.of(context).primaryColor,
         ),
         body: GoogleMap(
           mapType: MapType.hybrid,
@@ -46,15 +48,15 @@ class _HomePageState extends State<HomePage> {
 
   void _getLocation() async {
 
+    var currentLocation = await Geolocator()
+        .getCurrentPosition(desiredAccuracy: LocationAccuracy.best);
     if (mapController != null) {
       mapController.animateCamera(CameraUpdate.newCameraPosition(
           CameraPosition(
-              target: _center,
+              target: LatLng(currentLocation.latitude, currentLocation.longitude),
               zoom: 19.151926040649414))
       );
     }
-    var currentLocation = await Geolocator()
-        .getCurrentPosition(desiredAccuracy: LocationAccuracy.best);
 
     setState(() {
       _markers.clear();
